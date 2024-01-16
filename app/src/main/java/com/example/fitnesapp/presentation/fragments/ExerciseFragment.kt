@@ -68,14 +68,14 @@ class ExerciseFragment : Fragment() {
 
         }
 
-    }
+    } //TODO перенести во (ViewModel)
 
     private fun showExercise(exercise: ExerciseModel?) = with(binding) {
         imMainEx.setImageDrawable(exercise?.image?.let { GifDrawable(root.context.assets, it) })
         tvNameEx.text = exercise?.name
         val title = "$exerciseCounter / ${exList?.size}"
         ab.title = title
-    } //показываеи упражнение
+    } //показываеи упражнение(Oставить)
 
 
     private fun showNextExercise() = with(binding) {
@@ -87,7 +87,7 @@ class ExerciseFragment : Fragment() {
             imNextExercise.setImageDrawable(GifDrawable(root.context.assets, "finish.gif"))
             tvNext.text = getString(R.string.end)
         }
-    } // показываем следующее упражнение
+    } // показываем следующее упражнение(Оставить)
 
 
     private fun setExerciseType(exercise: ExerciseModel) {

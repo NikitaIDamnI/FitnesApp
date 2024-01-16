@@ -33,15 +33,17 @@ class ExercisesListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        init()
+        bindingAdapter()
         ab = (activity as AppCompatActivity).supportActionBar!!
         ab.title = getString( R.string.exercises)
+
         model.mutableLiveExercise.observe(viewLifecycleOwner) {
             for(i in 0 until model.getExerciseCount()){
                 it[i] = it[i].copy(isDone = true)
-            }
-            adapter.submitList(it)
-        }
+            }//Todo со
+                  adapter.submitList(it)
+        } //
+
         binding.bStart.setOnClickListener {
             FragmentManager.setFragment(
                 WaitingFragment.newInstance(),
@@ -52,7 +54,7 @@ class ExercisesListFragment : Fragment() {
 
     }
 
-    private fun init() = with(binding) {
+    private fun bindingAdapter() = with(binding) {
         adapter = ExerciseAdapter()
         rcView.layoutManager = LinearLayoutManager(activity)
         rcView.adapter = adapter

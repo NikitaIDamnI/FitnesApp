@@ -37,7 +37,7 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentDaysBinding.inflate(inflater, container, false) // Надули вью
         return binding.root
     }
@@ -94,7 +94,7 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
         }
         updateLeftDays(tArray.size - daysDoneCounter, tArray.size)
         return tArray
-    }
+    }//TODO Заполнить масив дней(ViewModel)
 
     private fun updateLeftDays(restDays: Int, days: Int) =
         with(binding) {// сколько дней осталось и прогресс бар
@@ -102,7 +102,7 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
             tvRestDays.text = rDays
             progressBar.progress = days - restDays
 
-        }
+        }//TODO (ViewModel) обновить прогресс бар
 
     /*
     Здесь у нас функция собирает данные занятий, за день и заполняет их в лист
@@ -125,12 +125,13 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
                         exerciseArray[2],
                         false
                     )
-                ) // и записывает полученное кпражнение
+                ) // и записывает полученное упражнение
 
             }
         model.mutableLiveExercise.value = tempList // передаем лист
 
-    }
+    }//TODO Парсит в день все упраждения (Заполнить в Базу)
+
 
 
     companion object {
@@ -165,5 +166,5 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
                 })
 
         }
-    }
+    } //TODO обработать
 }

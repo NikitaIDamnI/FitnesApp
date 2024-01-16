@@ -5,5 +5,4 @@ data class ExerciseModel(
     var time: String, // время
     var image: String, // изображение
     var isDone: Boolean
-
 )
