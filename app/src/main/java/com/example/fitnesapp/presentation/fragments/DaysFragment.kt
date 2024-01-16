@@ -1,4 +1,4 @@
-package com.example.fitnesapp.fragments
+package com.example.fitnesapp.presentation.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,13 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitnesapp.R
-import com.example.fitnesapp.adapters.DayModel
-import com.example.fitnesapp.adapters.DaysAdapter
-import com.example.fitnesapp.adapters.ExerciseModel
+import com.example.fitnesapp.domain.models.DayModel
+import com.example.fitnesapp.presentation.adapters.DaysAdapter
+import com.example.fitnesapp.domain.models.ExerciseModel
 import com.example.fitnesapp.databinding.FragmentDaysBinding
 import com.example.fitnesapp.utils.DialogManager
 import com.example.fitnesapp.utils.FragmentManager

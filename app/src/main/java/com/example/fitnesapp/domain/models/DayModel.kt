@@ -1,4 +1,4 @@
-package com.example.fitnesapp.adapters
+package com.example.fitnesapp.domain.models
 
 import java.lang.Exception
 /*

@@ -1,4 +1,4 @@
-package com.example.fitnesapp.adapters
+package com.example.fitnesapp.domain.models
 
 data class ExerciseModel(
     var name: String, // название упражненя

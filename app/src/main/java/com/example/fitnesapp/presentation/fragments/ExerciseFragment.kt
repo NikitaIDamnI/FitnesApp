@@ -1,4 +1,4 @@
-package com.example.fitnesapp.fragments
+package com.example.fitnesapp.presentation.fragments
 
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -10,7 +10,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import com.example.fitnesapp.R
-import com.example.fitnesapp.adapters.ExerciseModel
+import com.example.fitnesapp.domain.models.ExerciseModel
 import com.example.fitnesapp.databinding.ExerciseBinding
 import com.example.fitnesapp.utils.FragmentManager
 import com.example.fitnesapp.utils.MainViewModel

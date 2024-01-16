@@ -1,4 +1,4 @@
-package com.example.fitnesapp.fragments
+package com.example.fitnesapp.presentation.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitnesapp.R
-import com.example.fitnesapp.adapters.ExerciseAdapter
+import com.example.fitnesapp.presentation.adapters.ExerciseAdapter
 import com.example.fitnesapp.databinding.ExercisesListFragmentBinding
 import com.example.fitnesapp.utils.FragmentManager
 import com.example.fitnesapp.utils.MainViewModel

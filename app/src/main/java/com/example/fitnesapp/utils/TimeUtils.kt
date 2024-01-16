@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.example.fitnesapp.fragments.COUNT_DOWN_TIMER
-import com.example.fitnesapp.fragments.ExerciseFragment
+import com.example.fitnesapp.presentation.fragments.COUNT_DOWN_TIMER
+import com.example.fitnesapp.presentation.fragments.ExerciseFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 

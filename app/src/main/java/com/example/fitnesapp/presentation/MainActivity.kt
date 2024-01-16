@@ -1,9 +1,10 @@
-package com.example.fitnesapp
+package com.example.fitnesapp.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import com.example.fitnesapp.fragments.DaysFragment
+import com.example.fitnesapp.R
+import com.example.fitnesapp.presentation.fragments.DaysFragment
 import com.example.fitnesapp.utils.FragmentManager
 import com.example.fitnesapp.utils.MainViewModel
 

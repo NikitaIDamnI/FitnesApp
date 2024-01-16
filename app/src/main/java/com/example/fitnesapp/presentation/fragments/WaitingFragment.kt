@@ -1,4 +1,4 @@
-package com.example.fitnesapp.fragments
+package com.example.fitnesapp.presentation.fragments
 
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -46,7 +46,8 @@ class WaitingFragment : Fragment() {
 
             }
             override fun onFinish() {
-                FragmentManager.setFragment(ExerciseFragment.newInstance(),
+                FragmentManager.setFragment(
+                    ExerciseFragment.newInstance(),
                     activity as AppCompatActivity)
             }
         }.start()

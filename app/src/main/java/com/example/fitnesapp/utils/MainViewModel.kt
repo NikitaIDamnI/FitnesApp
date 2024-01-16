@@ -3,13 +3,9 @@ package com.example.fitnesapp.utils
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.fitnesapp.adapters.ExerciseModel
+import com.example.fitnesapp.domain.models.ExerciseModel
 
-/*
-Здесь будут храниться данные
-урок 13: https://drive.google.com/file/d/1HMMf-1Ihi4WFs1PfUEVdV0WLJdmJgYTu/view?usp=sharing
 
- */
 
 class MainViewModel: ViewModel() {
     val mutableLiveExercise = MutableLiveData<ArrayList<ExerciseModel>>() //объект хранит всебе список

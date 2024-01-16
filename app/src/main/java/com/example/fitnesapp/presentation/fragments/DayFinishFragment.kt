@@ -1,4 +1,4 @@
-package com.example.fitnesapp.fragments
+package com.example.fitnesapp.presentation.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -37,7 +37,8 @@ class DayFinishFragment : Fragment() {
         imFinishGif.setImageDrawable(GifDrawable(root.context.assets,"finish.gif"))
         bEnd.setOnClickListener {
 
-            FragmentManager.setFragment(DaysFragment.newInstance(),
+            FragmentManager.setFragment(
+                DaysFragment.newInstance(),
                 activity as AppCompatActivity)
 
         }

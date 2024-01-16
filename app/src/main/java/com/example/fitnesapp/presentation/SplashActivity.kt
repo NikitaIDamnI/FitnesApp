@@ -1,10 +1,11 @@
-package com.example.fitnesapp
+package com.example.fitnesapp.presentation
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import com.example.fitnesapp.R
 
 @SuppressLint("CustomSplashScreen") //Подавляем ошибку чтобы она не появилась
 class SplashActivity : AppCompatActivity() {   // Вызываем класс Сплешь Скрин , это наш загрузочеый экран
@@ -25,7 +26,7 @@ class SplashActivity : AppCompatActivity() {   // Вызываем класс С
             }
 
             override fun onFinish() {
-               startActivity(Intent(this@SplashActivity,MainActivity::class.java)) // После того как счетчик закончится откроется Activity
+               startActivity(Intent(this@SplashActivity, MainActivity::class.java)) // После того как счетчик закончится откроется Activity
             }
 
         }.start()
