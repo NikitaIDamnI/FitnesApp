@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- MyCheckBox == меняем слить CheckBox-->
+<resources>
+    <style name="MyCheckBox" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlActivated">@color/white</item>
+    </style>
+
+
+    <style name="MyActionBarStyle" parent="Widget.AppCompat.ActionBar">
+        <item name="android:background">@color/black</item> <!-- Задайте цвет фона ActionBar -->
+        <item name="android:titleTextStyle">@style/MyActionBarText</item> <!-- Определите стиль текста заголовка ActionBar -->
+    </style>
+
+    <style name="MyActionBarText">
+        <item name="android:textColor">@color/red</item> <!-- Задайте цвет текста заголовка ActionBar -->
+        <item name="android:textStyle">italic</item> <!-- Задайте стиль шрифта, например, жирный (bold) -->
+        <item name="fontFamily">@font/aclonica</item>
+    </style>
+
+</resources>

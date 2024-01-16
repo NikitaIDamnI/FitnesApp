@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Fitness Is Life</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="slogan">On the way to perfection</string>
+    <string name="day">Day:</string>
+    <string name="days">Days exercise</string>
+    <string name="exercise">exercise:</string>
+    <string name="waiting">Waiting</string>
+    <string name="exercises">Exercises</string>
+    <string name="waiting_massage">The exercises will begin in:</string>
+    <string name="start_timer">Start</string>
+    <string name="bNext">Next exercise</string>
+    <string name="done">The End</string>
+    <string name="tvNext">Next : </string>
+    <string name="end">The End</string>
+    <string name="left">Left: </string>
+    <string name="left_days">days</string>
+    <string name="reset">Reset</string>
+    <string name="note">Note</string>
+    <string name="back">Back</string>
+    <string name="reset_days_massage">Are you sure you want to reset all your training days?</string>
+    <string name="reset_day_massage">Do you want to repeat this day ?</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+
+
+
+
+</resources>
