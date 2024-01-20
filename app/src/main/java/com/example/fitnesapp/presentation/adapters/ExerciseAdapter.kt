@@ -23,7 +23,7 @@ class ExerciseAdapter() :
             with(binding) {
                 tvNameEx.text = exerciseModel.name
                 val format = formatCount(exerciseModel.time)
-                checkBox2.isChecked = exerciseModel.isDone
+                checkBox2.isChecked = false//exerciseModel.isDone
                 tvCount.text = format
                 imExercise.setImageDrawable(GifDrawable(root.context.assets, exerciseModel.image))
             }

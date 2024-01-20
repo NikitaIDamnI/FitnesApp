@@ -26,7 +26,7 @@ class ExercisesListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = ExercisesListFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -35,13 +35,13 @@ class ExercisesListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         bindingAdapter()
         ab = (activity as AppCompatActivity).supportActionBar!!
-        ab.title = getString( R.string.exercises)
+        ab.title = getString(R.string.exercises)
 
         model.mutableLiveExercise.observe(viewLifecycleOwner) {
-            for(i in 0 until model.getExerciseCount()){
-                it[i] = it[i].copy(isDone = true)
-            }//Todo со
-                  adapter.submitList(it)
+            //for (i in 0 until model.getExerciseCount()) {
+             //   it[i] = it[i].copy(isDone = true)
+            //}//Todo со
+            adapter.submitList(it)
         } //
 
         binding.bStart.setOnClickListener {
@@ -62,8 +62,16 @@ class ExercisesListFragment : Fragment() {
 
     companion object {
 
-        @JvmStatic
-        fun newInstance() = ExercisesListFragment()
+        fun newInstance(dayNumber:Int): ExercisesListFragment {
+            return ExercisesListFragment().apply {
+                arguments = Bundle().apply {
+                    putInt(DAY_NUMBER,dayNumber)
+                }
+            }
+
+        }
+
+        private const val DAY_NUMBER = "dayNumber"
 
     }
 }

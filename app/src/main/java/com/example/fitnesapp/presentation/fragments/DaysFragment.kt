@@ -10,24 +10,27 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitnesapp.R
 import com.example.fitnesapp.domain.models.DayModel
 import com.example.fitnesapp.presentation.adapters.DaysAdapter
-import com.example.fitnesapp.domain.models.ExerciseModel
 import com.example.fitnesapp.databinding.FragmentDaysBinding
+import com.example.fitnesapp.presentation.viewmodels.DaysFragmentViewModel
 import com.example.fitnesapp.utils.DialogManager
 import com.example.fitnesapp.utils.FragmentManager
-import com.example.fitnesapp.utils.MainViewModel
 
 
 class DaysFragment : Fragment(), DaysAdapter.Listener {
 
     private lateinit var binding: FragmentDaysBinding // cоздали VB
-    private val model: MainViewModel by activityViewModels() // cоздаем переменную VM для сохранения данных
     private lateinit var ab: ActionBar
     private lateinit var adapter: DaysAdapter
+    private val model: DaysFragmentViewModel by lazy {
+        ViewModelProvider(this)[DaysFragmentViewModel::class.java]
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +47,9 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        model.currentDay = 0 // чтобы не проходил больще наших дней, обнолять
+        // model.currentDay = 0 // чтобы не проходил больще наших дней, обнолять
+        model.loadingFromResourcesInData()
+        updateLeftDays()
         initRcView()
     }
 
@@ -59,8 +64,8 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
                 R.string.reset_days_massage,
                 object : DialogManager.Listener {
                     override fun onClick() {
-                        model.pref?.edit()?.clear()?.apply()
-                        adapter.submitList(fillDaysArray())
+                        // model.pref?.edit()?.clear()?.apply()
+                       // adapter.submitList(model.listDay.value)
                     }
                 })
 
@@ -75,12 +80,12 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
         adapter = DaysAdapter(this@DaysFragment) // указываем этот фрагмент
         rcViewDays.layoutManager = LinearLayoutManager(activity as AppCompatActivity)
         rcViewDays.adapter = adapter
-        adapter.submitList(fillDaysArray())
+        adapter.submitList(model.listDay.value)
     }
 
 
     //урок 9: https://drive.google.com/file/d/1techY8-GilNuYuWC1-G02tEJQxdmbA4R/view?usp=sharing
-    private fun fillDaysArray(): ArrayList<DayModel> { //заполняет список для дней с занятий
+    /* private fun fillDaysArray(): ArrayList<DayModel> { //заполняет список для дней с занятий
         val tArray = ArrayList<DayModel>() // содаем список
         var daysDoneCounter = 0
         resources.getStringArray(R.array.day_exercise).forEach {
@@ -96,20 +101,26 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
         return tArray
     }//TODO Заполнить масив дней(ViewModel)
 
-    private fun updateLeftDays(restDays: Int, days: Int) =
-        with(binding) {// сколько дней осталось и прогресс бар
-            val rDays = getString(R.string.left) + "$restDays" + getString(R.string.left_days)
-            tvRestDays.text = rDays
-            progressBar.progress = days - restDays
+    */
 
-        }//TODO (ViewModel) обновить прогресс бар
+    private fun updateLeftDays() {
+        val days =  1//TODO
+        val dayPassed = model.dayPassed.value ?: 0
+    with(binding)
+    {// сколько дней осталось и прогресс бар
+        val rDays = getString(R.string.left) + "${ days - dayPassed}" + getString(R.string.left_days)
+        tvRestDays.text = rDays
+        progressBar.progress =  dayPassed
+
+    }
+}
 
     /*
     Здесь у нас функция собирает данные занятий, за день и заполняет их в лист
     Урок 12: https://drive.google.com/file/d/1HMMf-1Ihi4WFs1PfUEVdV0WLJdmJgYTu/view?usp=sharing
      */
 
-    private fun fileExerciseList(day: DayModel) {
+   /* private fun fileExerciseList(day: DayModel) {
         val tempList = ArrayList<ExerciseModel>() // будет хранить все данные занятий за целый день
         day.exception.split(",")
             .forEach {// разбираем массив всех упраженений и будем заполнять в tempList
@@ -133,6 +144,8 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
     }//TODO Парсит в день все упраждения (Заполнить в Базу)
 
 
+    */
+
 
     companion object {
 
@@ -142,24 +155,25 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
     }
 
     override fun onClick(day: DayModel) {
-        if (!day.isDone) {
-            fileExerciseList(day)
-            model.currentDay = day.dayNumber
+        if (!day.isDone) { // передать день
+            //fileExerciseList(day)
+         //   model.currentDay = day.dayNumber
             FragmentManager.setFragment(
-                ExercisesListFragment.newInstance(),
+                ExercisesListFragment.newInstance(day.dayNumber),
                 activity as AppCompatActivity
             )
-        } else {
+        } else { // сбросить день
             DialogManager.showDialog(
                 activity as AppCompatActivity,
                 R.string.reset_day_massage,
                 object : DialogManager.Listener {
                     override fun onClick() {
-                        model.savePref(day.dayNumber.toString(),0)
-                        fileExerciseList(day)
-                        model.currentDay = day.dayNumber
+                        //model.savePref(day.dayNumber.toString(),0)
+                      //  fileExerciseList(day)
+                      //  model.currentDay = day.dayNumber
+                        model.updateExercise(day,DayModel.UNDEFINED_COMPLETED_EXERCISES)
                         FragmentManager.setFragment(
-                            ExercisesListFragment.newInstance(),
+                            ExercisesListFragment.newInstance(day.dayNumber),
                             activity as AppCompatActivity)
 
                     }

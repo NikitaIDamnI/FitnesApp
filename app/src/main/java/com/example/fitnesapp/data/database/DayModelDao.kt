@@ -9,11 +9,10 @@ import androidx.room.Query
 @Dao
 interface DayModelDao {
     @Query("SELECT * FROM days ")
-    suspend fun getDaysList(): LiveData<List<DayModelDb>>
-
+     fun getDaysList(): LiveData<List<DayDbModel>>
     @Query("SELECT * FROM days WHERE dayNumber=:dayNumber LIMIT 1")
-    suspend fun getDay(dayNumber: Int): LiveData<DayModelDb>
+      fun getDay(dayNumber: Int): LiveData<DayDbModel>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun updateDay(shopItemDbModel: DayModelDb)
+    suspend fun updateDay(shopItemDbModel: DayDbModel)
 }

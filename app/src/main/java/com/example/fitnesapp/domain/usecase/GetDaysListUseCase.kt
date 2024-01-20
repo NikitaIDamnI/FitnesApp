@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import com.example.fitnesapp.domain.DayRepository
 import com.example.fitnesapp.domain.models.DayModel
 
-class GetDayListUseCase(
+class GetDaysListUseCase(
    private val dayRepository: DayRepository
 ){
-    suspend operator fun invoke(): LiveData<List<DayModel>>{
+      operator fun invoke(): LiveData<List<DayModel>>{
         return dayRepository.getDaysList()
     }
 }
