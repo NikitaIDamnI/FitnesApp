@@ -10,9 +10,8 @@ import com.example.fitnesapp.R
 import com.example.fitnesapp.databinding.DaysListItemBinding
 import com.example.fitnesapp.domain.models.DayModel
 
-class DaysAdapter(private var listener: Listener): ListAdapter<DayModel, DaysAdapter.DayHolder>(
-     MyComparator()
- ) {  // Здесь будет лист
+class DaysAdapter(private var listener: Listener)
+    : ListAdapter<DayModel, DaysAdapter.DayHolder>(MyComparator()) {  // Здесь будет лист
 
      class DayHolder(view: View) : RecyclerView.ViewHolder(view) {
          private val binding = DaysListItemBinding.bind(view)
@@ -20,18 +19,22 @@ class DaysAdapter(private var listener: Listener): ListAdapter<DayModel, DaysAda
          fun setData(dayModel: DayModel, listener: Listener) =
              with(binding) {
 
-                 var name ="${root.context.resources.getString(R.string.day)}" + " ${adapterPosition + 1} "
+               var name = dayModel.dayNumber.toString()
 
                  tvName.text = name
-                 val exCounter = root.context.getString(R.string.exercise) + " ${sizeExercises(dayModel.exception)}"
+                 val exCounter = root.context.getString(R.string.exercise) +
+                         " ${sizeExercises(dayModel.exercises)}"
                  tvExCounter.text = exCounter
                  checkBox.isChecked = dayModel.isDone
                  itemView.setOnClickListener {
-                     listener.onClick(dayModel.copy(dayNumber = adapterPosition + 1 )) }
+                     listener.onClick(dayModel)
+                 }
              }
          private fun sizeExercises(exception: String): String {
              return exception.split(",").filter { it != "0" }.size.toString()
          }
+
+
      }
 
      override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayHolder {
@@ -44,7 +47,9 @@ class DaysAdapter(private var listener: Listener): ListAdapter<DayModel, DaysAda
      }
 
 
-     class MyComparator(): DiffUtil.ItemCallback<DayModel>(){
+
+
+    class MyComparator(): DiffUtil.ItemCallback<DayModel>(){
 
          override fun areItemsTheSame(oldItem: DayModel, newItem: DayModel): Boolean {
              return oldItem == newItem

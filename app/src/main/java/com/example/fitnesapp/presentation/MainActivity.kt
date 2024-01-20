@@ -3,18 +3,20 @@ package com.example.fitnesapp.presentation
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.fitnesapp.R
 import com.example.fitnesapp.presentation.fragments.DaysFragment
+import com.example.fitnesapp.presentation.viewmodels.DaysFragmentViewModel
 import com.example.fitnesapp.utils.FragmentManager
 import com.example.fitnesapp.utils.MainViewModel
 
 class MainActivity : AppCompatActivity() {
-    private val model: MainViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        model.pref = getSharedPreferences("main", MODE_PRIVATE)
+        // model.pref = getSharedPreferences("main", MODE_PRIVATE)
         FragmentManager.setFragment(DaysFragment.newInstance(),this) //выводим фрагмент
     }
 
