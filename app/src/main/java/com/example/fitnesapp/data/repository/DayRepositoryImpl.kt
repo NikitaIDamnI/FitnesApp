@@ -21,14 +21,14 @@ class DayRepositoryImpl(
     private val db = AppDatabase.getInstance(application)
     private val dayModelDao = db.DayModelDao()
 
-    override fun getDaysList(): LiveData<List<DayModel>> {
+    override  fun getDaysList(): LiveData<List<DayModel>> {
         return dayModelDao.getDaysList().map {
             mapper.mapListDayModelDbToListEntity(it)
         }
     }
 
 
-    override suspend fun getDay(day: Int): LiveData<DayModel> {
+    override  fun getDay(day: Int): LiveData<DayModel> {
         return dayModelDao.getDay(day).map { mapper.mapDayModelDbToEntity(it) }
     }
 

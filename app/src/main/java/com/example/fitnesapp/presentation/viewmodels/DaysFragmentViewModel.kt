@@ -1,9 +1,11 @@
 package com.example.fitnesapp.presentation.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.example.fitnesapp.data.repository.DayRepositoryImpl
 import com.example.fitnesapp.domain.models.DayModel
@@ -25,14 +27,32 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
     private val loadingFromResources = LoadingFromResourcesUseCase(repositoryImpl)
     private val updateExerciseUseCase = UpdateExerciseUseCase(repositoryImpl)
 
-    var listDay = getDaysListUseCase()
-    val dayPassed = dayPassed()
+  private var _listDay = getDaysListUseCase()
+    val listDay : LiveData<List<DayModel>>
+        get() = _listDay
+init {
+    loadingFromResourcesInData()
+}
 
-
-    fun loadingFromResourcesInData(){
-        viewModelScope.launch {
-            loadingFromResources()
+    private fun loadingFromResourcesInData(){
+        /*
+        CoroutineScope(Dispatchers.IO).launch{
+            repositoryImpl.cleanDB()
         }
+         */
+        viewModelScope.launch {
+        _listDay = getDaysListUseCase()
+        if(listDay.value == null) {
+
+                loadingFromResources()
+            }
+            _listDay= getDaysListUseCase()
+        }
+
+
+
+
+
     }
 
 

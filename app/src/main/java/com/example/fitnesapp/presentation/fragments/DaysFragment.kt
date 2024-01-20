@@ -1,6 +1,7 @@
 package com.example.fitnesapp.presentation.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -48,7 +49,8 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // model.currentDay = 0 // чтобы не проходил больще наших дней, обнолять
-        model.loadingFromResourcesInData()
+
+
         updateLeftDays()
         initRcView()
     }
@@ -80,7 +82,10 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
         adapter = DaysAdapter(this@DaysFragment) // указываем этот фрагмент
         rcViewDays.layoutManager = LinearLayoutManager(activity as AppCompatActivity)
         rcViewDays.adapter = adapter
-        adapter.submitList(model.listDay.value)
+        model.listDay.observe(viewLifecycleOwner) {
+            Log.d("LogListDay","$it")
+            adapter.submitList(it)
+        }
     }
 
 
@@ -105,7 +110,7 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
 
     private fun updateLeftDays() {
         val days =  1//TODO
-        val dayPassed = model.dayPassed.value ?: 0
+        val dayPassed = 1 ?: 0
     with(binding)
     {// сколько дней осталось и прогресс бар
         val rDays = getString(R.string.left) + "${ days - dayPassed}" + getString(R.string.left_days)
