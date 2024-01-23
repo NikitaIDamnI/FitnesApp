@@ -12,24 +12,31 @@ import android.view.ViewGroup
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.fitnesapp.R
 import com.example.fitnesapp.domain.models.DayModel
-import com.example.fitnesapp.presentation.adapters.DaysAdapter
+import com.example.fitnesapp.presentation.adapters.daysAdapter.DaysAdapter
 import com.example.fitnesapp.databinding.FragmentDaysBinding
 import com.example.fitnesapp.presentation.viewmodels.DaysFragmentViewModel
 import com.example.fitnesapp.utils.DialogManager
 import com.example.fitnesapp.utils.FragmentManager
+import java.lang.RuntimeException
 
 
-class DaysFragment : Fragment(), DaysAdapter.Listener {
+class DaysFragment : Fragment() {
 
-    private lateinit var binding: FragmentDaysBinding // cоздали VB
+    private var _binding: FragmentDaysBinding? = null
+    private val binding: FragmentDaysBinding
+        get() = _binding ?: throw RuntimeException("FragmentDaysBinding == null")
+
+    // cоздали VB
     private lateinit var ab: ActionBar
-    private lateinit var adapter: DaysAdapter
+    private val adapter: DaysAdapter by lazy {
+        DaysAdapter(
+            activity?.applicationContext ?: throw RuntimeException("DaysAdapter context == null")
+        )
+    }
     private val model: DaysFragmentViewModel by lazy {
         ViewModelProvider(this)[DaysFragmentViewModel::class.java]
-
     }
 
 
@@ -42,7 +49,7 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDaysBinding.inflate(inflater, container, false) // Надули вью
+        _binding = FragmentDaysBinding.inflate(inflater, container, false) // Надули вью
         return binding.root
     }
 
@@ -51,8 +58,10 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
         // model.currentDay = 0 // чтобы не проходил больще наших дней, обнолять
 
 
-        updateLeftDays()
         initRcView()
+        setupOnClick()
+        updateLeftDays()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -67,7 +76,7 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
                 object : DialogManager.Listener {
                     override fun onClick() {
 
-                        model.resetProgress()
+                        //model.resetProgress()
                     }
                 })
 
@@ -76,19 +85,23 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
     }
 
     private fun initRcView() = with(binding) {
+
         ab = (activity as AppCompatActivity).supportActionBar!!
         ab.title = getString(R.string.days)
 
-        adapter = DaysAdapter(this@DaysFragment) // указываем этот фрагмент
-        rcViewDays.layoutManager = LinearLayoutManager(activity as AppCompatActivity)
-        rcViewDays.adapter = adapter
+        binding.rcViewDays.adapter = adapter
+        binding.rcViewDays.itemAnimator = null
+
         model.listDays.observe(viewLifecycleOwner) {
-            Log.d("LogListDay", "$it")
+            model.loadingFromResourcesInData(it)
             adapter.submitList(it)
         }
+
     }
 
+
     private fun updateLeftDays() {
+        model.updateLeftDays()
         model.leftDays.observe(viewLifecycleOwner) {
             binding.tvRestDays.text = it
         }
@@ -99,35 +112,37 @@ class DaysFragment : Fragment(), DaysAdapter.Listener {
     }
 
 
+
+
+    private fun setupOnClick() {
+        adapter.onDayItemClickListener = {
+            if (!it.isDone) {
+                FragmentManager.setFragment(
+                    ExercisesListFragment.newInstance(it),
+                    activity as AppCompatActivity
+                )
+            } else {
+                DialogManager.showDialog(
+                    activity as AppCompatActivity,
+                    R.string.reset_day_massage,
+                    object : DialogManager.Listener {
+                        override fun onClick() {
+                            model.updateExercise(it, DayModel.UNDEFINED_COMPLETED_EXERCISES)
+                            FragmentManager.setFragment(
+                                ExercisesListFragment.newInstance(it),
+                                activity as AppCompatActivity
+                            )
+
+                        }
+                    })
+
+            }
+        }
+    }
     companion object {
 
         @JvmStatic
         fun newInstance() = DaysFragment()
 
     }
-
-    override fun onClick(day: DayModel) {
-        if (!day.isDone) {
-
-            FragmentManager.setFragment(
-                ExercisesListFragment.newInstance(day.dayNumber),
-                activity as AppCompatActivity
-            )
-        } else {
-            DialogManager.showDialog(
-                activity as AppCompatActivity,
-                R.string.reset_day_massage,
-                object : DialogManager.Listener {
-                    override fun onClick() {
-                        model.updateExercise(day, DayModel.UNDEFINED_COMPLETED_EXERCISES)
-                        FragmentManager.setFragment(
-                            ExercisesListFragment.newInstance(day.dayNumber),
-                            activity as AppCompatActivity
-                        )
-
-                    }
-                })
-
-        }
-    } //TODO обработать
 }

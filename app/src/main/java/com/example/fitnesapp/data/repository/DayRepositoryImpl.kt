@@ -1,9 +1,7 @@
 package com.example.fitnesapp.data.repository
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.map
 import com.example.fitnesapp.R
@@ -21,14 +19,44 @@ class DayRepositoryImpl(
     private val db = AppDatabase.getInstance(application)
     private val dayModelDao = db.DayModelDao()
 
-    override  fun getDaysList(): LiveData<List<DayModel>> {
+    override fun getDaysList(): LiveData<List<DayModel>> {
         return dayModelDao.getDaysList().map {
             mapper.mapListDayModelDbToListEntity(it)
         }
     }
 
+    override fun getExerciseList(dayModel: DayModel): LiveData<List<ExerciseModel>> {
+        val dayIsDone = dayModel.completedExercises
+        val listExerciseModel =
+            mutableListOf<ExerciseModel>() // будет хранить все данные занятий за целый день
+        dayModel.exercises.split(",")
+            .forEachIndexed { index, it ->                // разбираем массив всех упраженений и будем заполнять в tempList
+                val exerciseListFromRes =
+                    application.resources.getStringArray(R.array.exercise) // получаем из ресурса все упражнения в массив
+                val exercise = exerciseListFromRes[it.toInt()] // получает упражнение
+                val exerciseArray = exercise.split("|") // разделяет его
+                val isDone = index <= dayIsDone
+                val time = if(!exerciseArray[1].startsWith("x"))
+                    mapper.mapFormatTime(exerciseArray[1])
+                else {
+                    exerciseArray[1]
+                }
+                    listExerciseModel.add(
+                        ExerciseModel(
+                            exerciseArray[0],
+                            time,
+                            exerciseArray[2],
+                            isDone = isDone
+                        )
+                    )
+                // и записывает полученное упражнение
+            }
 
-    override  fun getDay(day: Int): LiveData<DayModel> {
+        return MutableLiveData(listExerciseModel)
+    }
+
+
+    override fun getDay(day: Int): LiveData<DayModel> {
         return dayModelDao.getDay(day).map { mapper.mapDayModelDbToEntity(it) }
     }
 
@@ -50,14 +78,14 @@ class DayRepositoryImpl(
         )
     }
 
-    suspend fun cleanDB(){
+    suspend fun cleanDB() {
         db.clearAllTables()
     }
 
     override suspend fun loadingFromResources() {
         var currentDay = DayModel.UNDEFINED_ID
         application.resources.getStringArray(R.array.day_exercise).forEach {
-            val exCounter = it.split(",").size
+            // val exCounter = it.split(",").size
             updateDay(
                 DayModel(
                     currentDay++, exercises = it
@@ -69,29 +97,5 @@ class DayRepositoryImpl(
     private fun sizeExercises(exception: String): Int {
         return exception.split(",").size.toString().length//.filter { it != "0" }
     }
-
-
-    private fun parseFileExerciseList(listExerciseString: String): LiveData<List<ExerciseModel>> {
-        val listExerciseModel =
-            mutableListOf<ExerciseModel>() // будет хранить все данные занятий за целый день
-        listExerciseString.split(",")
-            .forEach {// разбираем массив всех упраженений и будем заполнять в tempList
-                val exerciseList =
-                    application.resources.getStringArray(R.array.exercise) // получаем из ресурса все упражнения в массив
-                val exercise = exerciseList[it.toInt()] // получает упражнение
-                val exerciseArray = exercise.split("|") // разделяет его
-
-                listExerciseModel.add(
-                    ExerciseModel(
-                        exerciseArray[0],
-                        exerciseArray[1],
-                        exerciseArray[2],
-                    )
-                ) // и записывает полученное упражнение
-
-            }
-        return MutableLiveData(listExerciseModel)
-    }
-
 
 }

@@ -10,8 +10,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 
 object TimeUtils {
+
     @SuppressLint("SimpleDateFormat")
-    val formatter = SimpleDateFormat("mm:ss")
+    private val formatter = SimpleDateFormat("mm:ss")
 
     fun getTime(time: Long): String{
         val cv = Calendar.getInstance()

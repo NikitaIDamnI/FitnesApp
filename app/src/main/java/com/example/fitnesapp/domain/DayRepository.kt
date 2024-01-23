@@ -7,6 +7,7 @@ import com.example.fitnesapp.domain.models.ExerciseModel
 interface DayRepository {
 
      fun getDaysList(): LiveData<List<DayModel>>
+     fun getExerciseList(dayModel: DayModel):LiveData<List<ExerciseModel>>
      fun getDay(day: Int): LiveData<DayModel>
     suspend fun updateDay(dayModel: DayModel)
     suspend fun updateExercise(dayModel: DayModel, completedExercises: Int)

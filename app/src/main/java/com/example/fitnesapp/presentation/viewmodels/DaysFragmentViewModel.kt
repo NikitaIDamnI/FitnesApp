@@ -1,15 +1,17 @@
 package com.example.fitnesapp.presentation.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import com.example.fitnesapp.R
+import com.example.fitnesapp.data.database.AppDatabase
 import com.example.fitnesapp.data.repository.DayRepositoryImpl
 import com.example.fitnesapp.domain.models.DayModel
 import com.example.fitnesapp.domain.usecase.GetDaysListUseCase
-import com.example.fitnesapp.domain.usecase.GetDayUseCase
 import com.example.fitnesapp.domain.usecase.LoadingFromResourcesUseCase
 import com.example.fitnesapp.domain.usecase.UpdateExerciseUseCase
 import kotlinx.coroutines.launch
@@ -23,9 +25,7 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
     private val loadingFromResources = LoadingFromResourcesUseCase(repositoryImpl)
     private val updateExerciseUseCase = UpdateExerciseUseCase(repositoryImpl)
 
-    private var _listDays = getDaysListUseCase()
-    val listDays: LiveData<List<DayModel>>
-        get() = _listDays
+    val listDays = getDaysListUseCase()
 
     val dayPassed = MutableLiveData<Int>()
 
@@ -34,24 +34,25 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
         get() = _leftDays
 
 
-    init {
-        updateLeftDays()
-        loadingFromResourcesInData()
-    }
-
-    private fun loadingFromResourcesInData() {
-        viewModelScope.launch {
-            _listDays = getDaysListUseCase()
-            if (listDays.value == null) {
-
-                loadingFromResources()
-            }
-            _listDays = getDaysListUseCase()
+    fun loadingFromResourcesInData(list: List<DayModel>) {
+        if (list != null) {
         }
-    }
+        synchronized(list) {
+            list.let {
+                if (it !== null) {
+                } else {
+                    viewModelScope.launch {
+                        loadingFromResources()
+                    }
+                }
+            }
+        }
+    }//TODO Решить вопрос с загрузкой
 
     fun resetProgress() {
-        loadingFromResourcesInData()
+        viewModelScope.launch {
+            loadingFromResources()
+        }
     }
 
 
@@ -64,7 +65,7 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
 
     private fun dayPassed() {
         var dayPass = 0
-        _listDays.value?.map {
+        listDays.value?.map {
             if (it.isDone) {
                 dayPass++
             }
@@ -72,10 +73,10 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
         dayPassed.value = dayPass
     }
 
-    private fun updateLeftDays() {
+    fun updateLeftDays() {
         dayPassed()
-        val daysThis = _listDays.value?.size ?: 1
-        val dayPassedThis = dayPassed.value?.toInt()?: 1
+        val daysThis = listDays.value?.size ?: 1
+        val dayPassedThis = dayPassed.value?.toInt() ?: 1
 
         _leftDays.value =
             application.getString(R.string.left) + "${daysThis - dayPassedThis}" + application
@@ -85,3 +86,4 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
 
 
 }
+

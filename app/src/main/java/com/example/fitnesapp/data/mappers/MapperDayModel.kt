@@ -28,7 +28,16 @@ class MapperDayModel {
         mapEntityToDayModelDb(it)
     }
 
+    fun mapFormatTime(seconds: String): String {
+        if (seconds.startsWith("w")) {
+            return seconds
+        } else {
+            val time = seconds.toLong()
 
+            val minutes = time / 60
+            val remainingSeconds = time % 60
+            return String.format("%02d:%02d", minutes, remainingSeconds)
+        }
 
-
+    }
 }
