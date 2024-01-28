@@ -8,7 +8,7 @@ import com.example.fitnesapp.domain.models.ExerciseModel
 class GetExerciseListUseCase(
    private val repository: DayRepository
 ) {
-    operator fun invoke(dayModel: DayModel): LiveData<List<ExerciseModel>> {
+    operator fun invoke(dayModel: DayModel): List<ExerciseModel> {
         return repository.getExerciseList(dayModel)
     }
 }

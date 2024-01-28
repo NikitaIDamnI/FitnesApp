@@ -10,6 +10,8 @@ import com.example.fitnesapp.data.mappers.MapperDayModel
 import com.example.fitnesapp.domain.DayRepository
 import com.example.fitnesapp.domain.models.DayModel
 import com.example.fitnesapp.domain.models.ExerciseModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class DayRepositoryImpl(
     private val application: Application
@@ -25,7 +27,7 @@ class DayRepositoryImpl(
         }
     }
 
-    override fun getExerciseList(dayModel: DayModel): LiveData<List<ExerciseModel>> {
+    override fun getExerciseList(dayModel: DayModel): List<ExerciseModel>{
         val dayIsDone = dayModel.completedExercises
         val listExerciseModel =
             mutableListOf<ExerciseModel>() // будет хранить все данные занятий за целый день
@@ -36,15 +38,10 @@ class DayRepositoryImpl(
                 val exercise = exerciseListFromRes[it.toInt()] // получает упражнение
                 val exerciseArray = exercise.split("|") // разделяет его
                 val isDone = index <= dayIsDone
-                val time = if(!exerciseArray[1].startsWith("x"))
-                    mapper.mapFormatTime(exerciseArray[1])
-                else {
-                    exerciseArray[1]
-                }
                     listExerciseModel.add(
                         ExerciseModel(
                             exerciseArray[0],
-                            time,
+                            exerciseArray[1],
                             exerciseArray[2],
                             isDone = isDone
                         )
@@ -52,8 +49,10 @@ class DayRepositoryImpl(
                 // и записывает полученное упражнение
             }
 
-        return MutableLiveData(listExerciseModel)
+        return listExerciseModel
     }
+
+
 
 
     override fun getDay(day: Int): LiveData<DayModel> {
@@ -67,7 +66,7 @@ class DayRepositoryImpl(
 
     override suspend fun updateExercise(dayModel: DayModel, completedExercises: Int) {
         val exerciseString = dayModel.exercises
-        val isDone = dayModel.completedExercises == sizeExercises(exerciseString)
+        val isDone = dayModel.completedExercises+1 == sizeExercises(exerciseString)
         updateDay(
             DayModel(
                 dayModel.dayNumber,

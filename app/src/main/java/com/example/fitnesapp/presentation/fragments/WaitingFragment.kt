@@ -10,11 +10,12 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import com.example.fitnesapp.R
 import com.example.fitnesapp.databinding.WaitingFragmentBinding
+import com.example.fitnesapp.domain.models.DayModel
 import com.example.fitnesapp.utils.FragmentManager
 import com.example.fitnesapp.utils.TimeUtils
 
 
-const val COUNT_DOWN_TIMER: Long = 10000L
+const val COUNT_DOWN_TIMER: Long = 1000L
 class WaitingFragment : Fragment() {
     private lateinit var binding: WaitingFragmentBinding // cоздали VB
     private lateinit var timer: CountDownTimer
@@ -47,12 +48,16 @@ class WaitingFragment : Fragment() {
             }
             override fun onFinish() {
                 FragmentManager.setFragment(
-                    ExerciseFragment.newInstance(),
+                    ExerciseFragment.newInstance(parseArgument()),
                     activity as AppCompatActivity)
             }
         }.start()
     }
 
+    private fun parseArgument() : DayModel {
+       return requireArguments().getParcelable<DayModel>(DAY_NUMBER) ?:
+                throw RuntimeException("ExercisesListFragment | thisDay == null")
+    }
     override fun onDetach() { //при сворачивании приложения таймер останавливается
         super.onDetach()
         timer.cancel()
@@ -61,8 +66,15 @@ class WaitingFragment : Fragment() {
 
     companion object {
 
-        @JvmStatic
-        fun newInstance() = WaitingFragment()
+        fun newInstance(day: DayModel): WaitingFragment {
+            return WaitingFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(DAY_NUMBER, day)
+                }
+            }
+
+        }
+        private const val DAY_NUMBER = "dayNumber"
 
     }
 }

@@ -43,10 +43,24 @@ class ExerciseAdapter() :
         with(holder.binding) {
             tvNameEx.text = exerciseModel.name
             checkBox2.isChecked = exerciseModel.isDone
-            tvCount.text = exerciseModel.time
+            val time = formatTime(exerciseModel.time)
+            tvCount.text = time
             imExercise.setImageDrawable(GifDrawable(root.context.assets, exerciseModel.image))
         }
 
+
+    private fun formatTime(seconds: String): String {
+        if (seconds.startsWith("x")) {
+            return seconds
+        } else {
+            val time = seconds.toLong()
+
+            val minutes = time / 60
+            val remainingSeconds = time % 60
+            return String.format("%02d:%02d", minutes, remainingSeconds)
+        }
+
+    }
 
 
 

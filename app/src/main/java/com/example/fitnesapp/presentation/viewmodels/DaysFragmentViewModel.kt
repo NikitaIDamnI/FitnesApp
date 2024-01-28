@@ -47,7 +47,7 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
                 }
             }
         }
-    }//TODO Решить вопрос с загрузкой
+    }//TODO Решить вопрос с загрузкой(вроде работает)
 
     fun resetProgress() {
         viewModelScope.launch {

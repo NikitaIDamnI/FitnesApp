@@ -47,12 +47,12 @@ class ExercisesListFragment : Fragment() {
         Log.d("ExercisesListFragment", "day $thisDay")
         // Log.d("ExercisesListFragment","$dayNumber")
         val list = model.getList(thisDay)
-        adapter.submitList(list.value)
+        adapter.submitList(list)
 
 
         binding.bStart.setOnClickListener {
             FragmentManager.setFragment(
-                WaitingFragment.newInstance(),
+                WaitingFragment.newInstance(thisDay),
                 activity as AppCompatActivity
             )
         }
