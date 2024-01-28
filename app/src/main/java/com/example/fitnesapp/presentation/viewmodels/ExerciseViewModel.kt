@@ -31,6 +31,8 @@ class ExerciseViewModel(
     val finish: LiveData<Boolean>
         get() = _finish
 
+    var finishUI = MutableLiveData<Boolean>()
+
     //Для View
     val sizeExercise = listExercise.size + DayModel.UNDEFINED_COMPLETED_EXERCISES
     private var _thisExercise = MutableLiveData<ExerciseModel>()
@@ -64,17 +66,24 @@ class ExerciseViewModel(
         if (_completedExercises.value == DayModel.UNDEFINED_COMPLETED_EXERCISES) {
             _completedExercises.value = START_EXERCISE
         }
+        completedExercises.value?.let {completedExercises ->
+            if (completedExercises <= sizeExercise) {
+                val countExercise = _completedExercises.value ?: day.completedExercises
+                _thisExercise.value = listExercise[countExercise]
+                if (countExercise < sizeExercise) {
+                    _nextExercise.value = listExercise[countExercise + 1]
+                }else{
 
-        val countExercise = _completedExercises.value ?: day.completedExercises
-        _thisExercise.value = listExercise[countExercise]
-        if (countExercise < sizeExercise) {
-            _nextExercise.value = listExercise[countExercise + 1]
+                }
+            }
         }
 
 
         Log.d("ExerciseViewModel", "completedExercises = ${_completedExercises.value}")
         Log.d("ExerciseViewModel", "size = ${sizeExercise}")
         Log.d("ExerciseViewModel", "finish = ${this.finish.value}")
+        Log.d("ExerciseViewModel", "finishUI = ${this.finishUI.value}")
+
         Log.d("ExerciseViewModel", "next")
 
 
@@ -137,14 +146,11 @@ class ExerciseViewModel(
 
 
     fun nextExercise() {
-        _finish.value?.let {
-            if (it) {
-                timer?.cancel()
-                val count = _completedExercises.value
-                _completedExercises.value = count?.plus(1)
-                updateExercise()
-            }
-        }
+
+        timer?.cancel()
+        val count = _completedExercises.value
+        _completedExercises.value = count?.plus(1)
+        updateExercise()
     }
 
 
@@ -158,9 +164,18 @@ class ExerciseViewModel(
     }
 
     private fun finish() {
-        val finish = _completedExercises.value!! < (sizeExercise)
-        this._finish.value = finish
+        val finish = _completedExercises.value!! <= (sizeExercise)
+        _finish.value = finish
+        finishUI()
     }
+
+    private fun finishUI() {
+        val finish = _completedExercises.value!! < (sizeExercise)
+        finishUI.value = finish
+    }
+
+
+
 
     companion object {
         const val START_EXERCISE = 0

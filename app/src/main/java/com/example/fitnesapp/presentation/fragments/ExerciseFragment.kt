@@ -87,7 +87,7 @@ class ExerciseFragment : Fragment() {
 
 
     private fun showNextExercise() = with(binding) {
-        viewModel.finish.observe(viewLifecycleOwner) { finish->
+        viewModel.finishUI.observe(viewLifecycleOwner) { finish->
         if (finish) {
 
             viewModel.nextExercise.observe(viewLifecycleOwner) {
