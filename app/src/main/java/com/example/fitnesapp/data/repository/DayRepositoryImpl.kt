@@ -66,7 +66,8 @@ class DayRepositoryImpl(
 
     override suspend fun updateExercise(dayModel: DayModel, completedExercises: Int) {
         val exerciseString = dayModel.exercises
-        val isDone = dayModel.completedExercises+1 == sizeExercises(exerciseString)
+        val size = sizeExercises(exerciseString)
+        val isDone = completedExercises== size
         updateDay(
             DayModel(
                 dayModel.dayNumber,
@@ -84,7 +85,6 @@ class DayRepositoryImpl(
     override suspend fun loadingFromResources() {
         var currentDay = DayModel.UNDEFINED_ID
         application.resources.getStringArray(R.array.day_exercise).forEach {
-            // val exCounter = it.split(",").size
             updateDay(
                 DayModel(
                     currentDay++, exercises = it
@@ -94,7 +94,8 @@ class DayRepositoryImpl(
     }
 
     private fun sizeExercises(exception: String): Int {
-        return exception.split(",").size.toString().length//.filter { it != "0" }
+        val  count = exception.split(",").size
+        return count
     }
 
 }

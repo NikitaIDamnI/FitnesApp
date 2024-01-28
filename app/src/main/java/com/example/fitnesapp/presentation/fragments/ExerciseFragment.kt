@@ -34,47 +34,43 @@ class ExerciseFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = ExerciseBinding.inflate(inflater, container, false) // Надули вью
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         ab = (activity as AppCompatActivity).supportActionBar!!
-
+        viewModel.completedExercises.observe(viewLifecycleOwner) {
+            val title = "${it + 1} / ${viewModel.sizeExercise + 1}"
+            ab.title = title
+        }
         show()
+    }
+
+    private fun show() {
         binding.bNext.setOnClickListener {
             viewModel.nextExercise()
         }
-    }
-
-
-    private fun show() {
         viewModel.finish.observe(viewLifecycleOwner) { finish ->
-        if (finish) {
-            viewModel.thisExercise.observe(viewLifecycleOwner) {
-                showExercise(it)
+            if (finish) {
+                showExercise()
+                showNextExercise()
+            } else {
+                viewModel.nextExercise()
+                FragmentManager.setFragment(
+                    DayFinishFragment.newInstance(),
+                    activity as AppCompatActivity
+                )
             }
-            showNextExercise()
-        } else {
-            viewModel.nextExercise()
-            FragmentManager.setFragment(
-                DayFinishFragment.newInstance(),
-                activity as AppCompatActivity
-            )  // конец упражнений пере
         }
     }
 
-    } //TODO перенести во (ViewModel)
-
-    private fun showExercise(exercise: ExerciseModel) = with(binding) {
-        imMainEx.setImageDrawable(exercise.image.let { GifDrawable(root.context.assets, it) })
-        tvNameEx.text = exercise.name
-        viewModel.completedExercises.observe(viewLifecycleOwner) {
-            val title = "${it+1} / ${viewModel.sizeExercise + 1}"
-            ab.title = title
+    private fun showExercise() = with(binding) {
+        viewModel.thisExercise.observe(viewLifecycleOwner) { it ->
+            imMainEx.setImageDrawable(it.image.let { GifDrawable(root.context.assets, it) })
+            tvNameEx.text = it.name
         }
         viewModel.formatTime.observe(viewLifecycleOwner) {
             tvTimer.text = it
@@ -82,76 +78,14 @@ class ExerciseFragment : Fragment() {
         viewModel.progress.observe(viewLifecycleOwner) {
             pBar.progress = it
         }
-
-    } //показываеи упражнение(Oставить)
-
+    }
 
     private fun showNextExercise() = with(binding) {
-        viewModel.finishUI.observe(viewLifecycleOwner) { finish->
-        if (finish) {
-
-            viewModel.nextExercise.observe(viewLifecycleOwner) {
-                imNextExercise.setImageDrawable(GifDrawable(root.context.assets, it.image))
-            }
-            viewModel.nextExercise.observe(viewLifecycleOwner) {
-                tvNext.text = it.time
-            }
-        } else {
-            imNextExercise.setImageDrawable(GifDrawable(root.context.assets, "finish.gif"))
-            tvNext.text = getString(R.string.end)
+        viewModel.nextExercise.observe(viewLifecycleOwner) {
+            imNextExercise.setImageDrawable(GifDrawable(root.context.assets, it.image))
+            tvNext.text = it.time
         }
     }
-    } // показываем следующее упражнение(Оставить)
-
-
-/*
-    private fun setExerciseType(exercise: ExerciseModel) {
-        if (exercise.time.startsWith("x")) {
-            binding.tvTimer.text = exercise.time
-        } else {
-            //startTimer(exercise)
-        }
-       }
- */
-
-
-
-    //определяем как будет пмсатсья время
-
-   /* private fun setTimeType(exercise: ExerciseModel) {
-        if (exercise.time.startsWith("x")) {
-            val time = exercise.name + ": ${exercise.time}"
-            binding.
-        } else {
-            val time = exercise.name + ": ${TimeUtils.getTime(exercise.time.toLong() * 1000)}"
-            binding.tvNext.text = time
-        }
-    } //определяем как будет пмсатсья время
-
-    */
-
-
-    /*
-    private fun startTimer(exercise: ExerciseModel) = with(binding) {
-        pBar.max = exercise.time.toInt() * 1000
-
-        // Отменяем предыдущий таймер, если он был запущен
-        timer?.cancel()
-
-        // Создаем новый таймер
-        timer = object : CountDownTimer(exercise.time.toLong() * 1000, 10) {
-            override fun onTick(restTime: Long) {
-                tvTimer.text = TimeUtils.getTime(restTime)
-                pBar.progress = restTime.toInt()
-            }
-
-            override fun onFinish() {
-                nextExercise()
-            }
-        }.start()
-    } //Включаем таймер и бар
-
-     */
 
 
     private fun parseArgument(): DayModel {
@@ -160,8 +94,17 @@ class ExerciseFragment : Fragment() {
         ))
     }
 
-    companion object {
 
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.update()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewModel.update()
+    }
+    companion object {
         fun newInstance(dayModel: DayModel): ExerciseFragment {
             return ExerciseFragment().apply {
                 arguments = Bundle().apply {
@@ -172,8 +115,7 @@ class ExerciseFragment : Fragment() {
         }
 
         private const val DAY_NUMBER = "dayNumber"
-
-
     }
 }
+
 

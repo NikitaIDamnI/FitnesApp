@@ -1,5 +1,6 @@
 package com.example.fitnesapp.presentation.viewmodels
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.os.CountDownTimer
 import android.util.Log
@@ -12,7 +13,12 @@ import com.example.fitnesapp.domain.models.DayModel
 import com.example.fitnesapp.domain.models.ExerciseModel
 import com.example.fitnesapp.domain.usecase.GetExerciseListUseCase
 import com.example.fitnesapp.domain.usecase.UpdateExerciseUseCase
+import com.example.fitnesapp.utils.TimeUtils
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.concurrent.TimeUnit
+import kotlin.math.max
 
 class ExerciseViewModel(
     private val application: Application, private val day: DayModel
@@ -30,8 +36,6 @@ class ExerciseViewModel(
     private var _finish = MutableLiveData<Boolean>()
     val finish: LiveData<Boolean>
         get() = _finish
-
-    var finishUI = MutableLiveData<Boolean>()
 
     //Для View
     val sizeExercise = listExercise.size + DayModel.UNDEFINED_COMPLETED_EXERCISES
@@ -62,60 +66,53 @@ class ExerciseViewModel(
     private fun updateExercise() {
         if (_completedExercises.value == null) {
             _completedExercises.value = day.completedExercises
+            finish()
         }
         if (_completedExercises.value == DayModel.UNDEFINED_COMPLETED_EXERCISES) {
             _completedExercises.value = START_EXERCISE
         }
-        completedExercises.value?.let {completedExercises ->
+
+
+        _completedExercises.value?.let { completedExercises ->
             if (completedExercises <= sizeExercise) {
                 val countExercise = _completedExercises.value ?: day.completedExercises
                 _thisExercise.value = listExercise[countExercise]
                 if (countExercise < sizeExercise) {
-                    _nextExercise.value = listExercise[countExercise + 1]
-                }else{
-
+                    _nextExercise.value = listExercise[countExercise + NEXT_EXERCISE]
+                } else {
+                    _nextExercise.value =
+                        listExercise[countExercise].copy(image = FINISH_GIF, time = FINISH_TIME)
                 }
+            }
+        }
+
+        _finish.value?.let {
+            if (it) {
+                startTimer()
+                finish()
+            } else {
+                update()
+
             }
         }
 
 
         Log.d("ExerciseViewModel", "completedExercises = ${_completedExercises.value}")
-        Log.d("ExerciseViewModel", "size = ${sizeExercise}")
-        Log.d("ExerciseViewModel", "finish = ${this.finish.value}")
-        Log.d("ExerciseViewModel", "finishUI = ${this.finishUI.value}")
-
-        Log.d("ExerciseViewModel", "next")
-
-
-
-        _finish.value.let {
-            if (it == null || it == true) {
-                finish()
-                startTimer()
-            }
-            if (it != null || it == true) {
-                startTimer()
-            }
-
-        }
 
 
     }
 
     private fun startTimer() {
-
-        // Отменяем предыдущий таймер, если он был запущен
         timer?.cancel()
-
         val time = _thisExercise.value?.time ?: "null"
 
-        // Создаем новый таймер
         if (!time.startsWith("x")) {
-            timer = object : CountDownTimer(time.toLong() * 1000, 10) {
-                override fun onTick(restTime: Long) {
-                    _formatTime.value = formatTime(restTime.toString())
-                    _progress.value = restTime.toInt()
+            val durationMillis = ((time.toLong()) * 1000L) + 50
+            timer = object : CountDownTimer(durationMillis, 1000) {
 
+                override fun onTick(millisUntilFinished: Long) {
+                    _formatTime.value = formatTime(millisUntilFinished)
+                    _progress.value = millisUntilFinished.toInt()
                 }
 
                 override fun onFinish() {
@@ -127,21 +124,15 @@ class ExerciseViewModel(
         } else {
             _formatTime.value = time
         }
-
-
     }
 
-    private fun formatTime(time: String): String {
+    private fun formatTime(millisUntilFinished: Long): String {
+        return String.format(
+            "%02d:%02d",
+            TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) % 60,
+            TimeUnit.MILLISECONDS.toSeconds(millisUntilFinished) % 60
+        )
 
-
-        if (time.startsWith("x")) {
-            return time
-        } else {
-            val second = time.toInt()
-            val minutes = second / 60
-            val remainingSeconds = second % 60
-            return String.format("%02d:%02d", minutes, remainingSeconds)
-        }
     }
 
 
@@ -154,24 +145,26 @@ class ExerciseViewModel(
     }
 
 
-    private fun update() {
+     fun update() {
         viewModelScope.launch {
+            var count = _completedExercises.value ?: day.completedExercises
+            if (count >= listExercise.size) {
+                count = listExercise.size
+            }
             updateExercises(
-                day, _completedExercises.value ?: day.completedExercises
+                day, count
             )
+
         }
+        Log.d("ExerciseViewModel", "update()")
+
 
     }
+
 
     private fun finish() {
         val finish = _completedExercises.value!! <= (sizeExercise)
         _finish.value = finish
-        finishUI()
-    }
-
-    private fun finishUI() {
-        val finish = _completedExercises.value!! < (sizeExercise)
-        finishUI.value = finish
     }
 
 
@@ -179,6 +172,10 @@ class ExerciseViewModel(
 
     companion object {
         const val START_EXERCISE = 0
+        const val NEXT_EXERCISE = 1
+        const val FINISH_GIF = "finish.gif"
+        const val FINISH_TIME = "The End"
+
     }
 
 
