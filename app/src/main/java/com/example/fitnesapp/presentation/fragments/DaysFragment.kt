@@ -46,8 +46,7 @@ class DaysFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         _binding = FragmentDaysBinding.inflate(inflater, container, false) // Надули вью
         return binding.root
@@ -70,8 +69,7 @@ class DaysFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.reset) {
-            DialogManager.showDialog(
-                activity as AppCompatActivity,
+            DialogManager.showDialog(activity as AppCompatActivity,
                 R.string.reset_days_massage,
                 object : DialogManager.Listener {
                     override fun onClick() {
@@ -112,26 +110,30 @@ class DaysFragment : Fragment() {
     }
 
 
-
-
     private fun setupOnClick() {
-        adapter.onDayItemClickListener = {
-            if (!it.isDone) {
+        adapter.onDayItemClickListener = { dayModel ->
+            if (!dayModel.isDone) {
                 FragmentManager.setFragment(
-                    ExercisesListFragment.newInstance(it),
-                    activity as AppCompatActivity
+                    ExercisesListFragment.newInstance(dayModel), activity as AppCompatActivity
                 )
             } else {
-                DialogManager.showDialog(
-                    activity as AppCompatActivity,
+                DialogManager.showDialog(activity as AppCompatActivity,
                     R.string.reset_day_massage,
                     object : DialogManager.Listener {
                         override fun onClick() {
-                            model.updateExercise(it, DayModel.UNDEFINED_COMPLETED_EXERCISES)
-                            FragmentManager.setFragment(
-                                ExercisesListFragment.newInstance(it),
-                                activity as AppCompatActivity
-                            )
+                            model.updateExercise(dayModel, DayModel.UNDEFINED_COMPLETED_EXERCISES)
+                            model.statusUpdate.observe(viewLifecycleOwner) { status ->
+
+                                if (status == DaysFragmentViewModel.STATUS_UPDATE_UPDATED) {
+                                    model.newDay.observe(viewLifecycleOwner) { newDay ->
+                                        Log.d("DaysFragment", "newDay $newDay")
+                                        FragmentManager.setFragment(
+                                            ExercisesListFragment.newInstance(newDay),
+                                            activity as AppCompatActivity
+                                        )
+                                    }
+                                }
+                            }
 
                         }
                     })
@@ -139,6 +141,7 @@ class DaysFragment : Fragment() {
             }
         }
     }
+
     companion object {
 
         @JvmStatic

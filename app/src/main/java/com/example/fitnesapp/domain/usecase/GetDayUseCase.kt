@@ -7,7 +7,7 @@ import com.example.fitnesapp.domain.models.DayModel
 class GetDayUseCase(
    private val repository: DayRepository
 ) {
-      operator fun invoke(day:Int):LiveData<DayModel>{
+      suspend operator fun invoke(day:Int):DayModel{
       return  repository.getDay(day)
     }
 }

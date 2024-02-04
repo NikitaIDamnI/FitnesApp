@@ -55,8 +55,9 @@ class DayRepositoryImpl(
 
 
 
-    override fun getDay(day: Int): LiveData<DayModel> {
-        return dayModelDao.getDay(day).map { mapper.mapDayModelDbToEntity(it) }
+    override suspend fun getDay(dayNum: Int): DayModel {
+        val day= dayModelDao.getDay(dayNum)
+        return mapper.mapDayModelDbToEntity(day)
     }
 
     override suspend fun updateDay(dayModel: DayModel) {

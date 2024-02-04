@@ -6,11 +6,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import androidx.room.Room
 import com.example.fitnesapp.R
-import com.example.fitnesapp.data.database.AppDatabase
 import com.example.fitnesapp.data.repository.DayRepositoryImpl
 import com.example.fitnesapp.domain.models.DayModel
+import com.example.fitnesapp.domain.usecase.GetDayUseCase
 import com.example.fitnesapp.domain.usecase.GetDaysListUseCase
 import com.example.fitnesapp.domain.usecase.LoadingFromResourcesUseCase
 import com.example.fitnesapp.domain.usecase.UpdateExerciseUseCase
@@ -24,6 +23,13 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
     private val getDaysListUseCase = GetDaysListUseCase(repositoryImpl)
     private val loadingFromResources = LoadingFromResourcesUseCase(repositoryImpl)
     private val updateExerciseUseCase = UpdateExerciseUseCase(repositoryImpl)
+    private val getDayUseCase = GetDayUseCase(repositoryImpl)
+
+    private var _statusUpdate = MutableLiveData(STATUS_UPDATE_IDLE)
+    val statusUpdate : LiveData<String>
+        get() = _statusUpdate
+
+    val newDay= MutableLiveData<DayModel>()
 
     val listDays = getDaysListUseCase()
 
@@ -57,10 +63,17 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
 
 
     fun updateExercise(dayModel: DayModel, completedExercises: Int) {
+        _statusUpdate.value = STATUS_UPDATE_UPDATING
         viewModelScope.launch {
             updateExerciseUseCase(dayModel, completedExercises)
-        }
 
+            newDay.value = getDayUseCase(dayModel.dayNumber)
+            _statusUpdate.value = STATUS_UPDATE_UPDATED
+            updateLeftDays()
+            Log.d("DaysFragment","newDay ViewModel ${newDay.value}")
+            Log.d("DaysFragment","newNumber ViewModel ${dayModel.dayNumber}")
+            Log.d("DaysFragment","newNumber ViewModel ${statusUpdate.value}")
+        }
     }
 
     private fun dayPassed() {
@@ -84,6 +97,14 @@ class DaysFragmentViewModel(private val application: Application) : AndroidViewM
 
     }
 
+   companion object{
+      const val STATUS_UPDATE_IDLE = "IDLE"
+       const val STATUS_UPDATE_UPDATED = "UPDATED"
+       const val STATUS_UPDATE_UPDATING = "UPDATING"
+
+
+
+   }
 
 }
 
